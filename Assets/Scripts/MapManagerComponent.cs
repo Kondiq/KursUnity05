@@ -113,7 +113,6 @@ public class MapManagerComponent : MonoBehaviour
                 }
             }
 
-
         tile = new Tile();
         return false;
     }
@@ -189,39 +188,94 @@ public class MapManagerComponent : MonoBehaviour
         return totalPriority;
     }
 
-    public Tile FindTileBestPriority(Tile originTile)
-    {
-        Tile bestPriorityTile = tiles[0,0];
-        for (int x = 0; x < tilesNumberWide; x++)
-            for (int y = 0; y < tilesNumberHigh; y++)
-            {                
-                if (bestPriorityTile.priority < tiles[x, y].priority)
-                    bestPriorityTile = tiles[x, y];
-                else if (bestPriorityTile.x != tiles[x, y].x && bestPriorityTile.y != tiles[x, y].y)
-                    if (bestPriorityTile.priority == tiles[x, y].priority)
-                    {
-                        if(CalculateNeighboursPriority(bestPriorityTile)< CalculateNeighboursPriority(tiles[x,y]))
-                            bestPriorityTile = tiles[x, y];
-                        else if(CalculateNeighboursPriority(bestPriorityTile) == CalculateNeighboursPriority(tiles[x, y])) //closer to originTile
-                        {
-                            if(Mathf.Abs(bestPriorityTile.x-originTile.x) + Mathf.Abs(bestPriorityTile.y - originTile.y)
-                                < Mathf.Abs(tiles[x, y].x - originTile.x) + Mathf.Abs(tiles[x, y].y - originTile.y))
-                                bestPriorityTile = tiles[x, y];
-                        }
-                    }
+    //public Tile FindTileBestPriority(Tile originTile)
+    //{
+    //    Tile bestPriorityTile = tiles[0,0];
+    //    for (int x = 0; x < tilesNumberWide; x++)
+    //        for (int y = 0; y < tilesNumberHigh; y++)
+    //        {                
+    //            if (bestPriorityTile.priority < tiles[x, y].priority)
+    //                bestPriorityTile = tiles[x, y];
+    //            else if (bestPriorityTile.x != tiles[x, y].x && bestPriorityTile.y != tiles[x, y].y)
+    //                if (bestPriorityTile.priority == tiles[x, y].priority)
+    //                {
+    //                    if(CalculateNeighboursPriority(bestPriorityTile)< CalculateNeighboursPriority(tiles[x,y]))
+    //                        bestPriorityTile = tiles[x, y];
+    //                    else if(CalculateNeighboursPriority(bestPriorityTile) == CalculateNeighboursPriority(tiles[x, y])) //closer to originTile
+    //                    {
+    //                        if(Mathf.Abs(bestPriorityTile.x-originTile.x) + Mathf.Abs(bestPriorityTile.y - originTile.y)
+    //                            < Mathf.Abs(tiles[x, y].x - originTile.x) + Mathf.Abs(tiles[x, y].y - originTile.y))
+    //                            bestPriorityTile = tiles[x, y];
+    //                    }
+    //                }
 
-            }
-        return bestPriorityTile;
+    //        }
+    //    return bestPriorityTile;
+    //}
+
+    public float CalculateDistanceOnGrid(int originX, int originY, int targetX, int targetY)
+    {
+        int distX = Mathf.Abs(originX - targetX);
+        int distY = Mathf.Abs(originY - targetY);
+
+        if (distX > distY)
+            return (1.4f * distY) + (distX - distY);
+        return (1.4f * distX) + (distY - distX);
     }
 
-    //TODO
+    //TODO optimize
+    //public Tile FindTileBestPriorityInRange(Tile originTile, int radiusInTiles)
+    //{
+    //    Tile bestPriorityTile = originTile;
+    //    for (int x = 0; x < tilesNumberWide; x++)
+    //        for (int y = 0; y < tilesNumberHigh; y++)
+    //        {
+    //            if(CalculateDistanceOnGrid(originTile.x, originTile.y, x, y) < radiusInTiles) //if tile in radius
+    //                if (bestPriorityTile.priority < tiles[x, y].priority)
+    //                    bestPriorityTile = tiles[x, y];
+    //                else if (bestPriorityTile.x != tiles[x, y].x && bestPriorityTile.y != tiles[x, y].y)
+    //                    if (bestPriorityTile.priority == tiles[x, y].priority)
+    //                    {
+    //                        if (CalculateNeighboursPriority(bestPriorityTile) < CalculateNeighboursPriority(tiles[x, y]))
+    //                            bestPriorityTile = tiles[x, y];
+    //                        else if (CalculateNeighboursPriority(bestPriorityTile) == CalculateNeighboursPriority(tiles[x, y])) //closer to originTile
+    //                        {
+    //                            if (Mathf.Abs(bestPriorityTile.x - originTile.x) + Mathf.Abs(bestPriorityTile.y - originTile.y)
+    //                                < Mathf.Abs(tiles[x, y].x - originTile.x) + Mathf.Abs(tiles[x, y].y - originTile.y))
+    //                                bestPriorityTile = tiles[x, y];
+    //                        }
+    //                    }
+    //        }
+    //    return bestPriorityTile;
+    //}
+
     public Tile FindTileBestPriorityInRange(Tile originTile, int radiusInTiles)
     {
-        Tile bestPriorityTile = floorTile;//temp
+        Tile bestPriorityTile = originTile;
+        for (int x = originTile.x-radiusInTiles; x < originTile.x + radiusInTiles; x++)
+            for (int y = originTile.y - radiusInTiles; y < originTile.y + radiusInTiles; y++)
+                if (x >= 0 && x < tilesNumberWide && y >= 0 && y < tilesNumberHigh) //if tile in grid
+                    if (CalculateDistanceOnGrid(originTile.x, originTile.y, x, y) < radiusInTiles) //if tile in radius
+                    {
+                        if (bestPriorityTile.priority < tiles[x, y].priority) //if better priority
+                            bestPriorityTile = tiles[x, y]; //assign
+                        else if(bestPriorityTile.priority == tiles[x, y].priority) //if equal
+                            if (bestPriorityTile.x != tiles[x, y].x && bestPriorityTile.y != tiles[x, y].y) //if it's not the same tile
+                            {
+                                if (CalculateNeighboursPriority(bestPriorityTile) < CalculateNeighboursPriority(tiles[x, y])) //if neighbours got better priority
+                                    bestPriorityTile = tiles[x, y]; //assign
+                                else if (CalculateNeighboursPriority(bestPriorityTile) == CalculateNeighboursPriority(tiles[x, y])) //checking which is closer to originTile
+                                {
+                                    if (Mathf.Abs(bestPriorityTile.x - originTile.x) + Mathf.Abs(bestPriorityTile.y - originTile.y)
+                                        < Mathf.Abs(tiles[x, y].x - originTile.x) + Mathf.Abs(tiles[x, y].y - originTile.y))
+                                        bestPriorityTile = tiles[x, y];
+                                }
+                            }
+                    }
         return bestPriorityTile;
     }
 
-    public void ChangeTilePriority(float x, float y, int changeFactor)
+        public void ChangeTilePriority(float x, float y, int changeFactor)
     {
         Tile tileToChange;
         if(GetCoordinatesTile(out tileToChange, x, y))

@@ -15,6 +15,7 @@ public class AIPlayerFinder : MonoBehaviour
     LayerMask maskObstacles;
     //Vector3 originRayCast;
     //Vector3 destinationRayCast;
+    MapManagerComponent.Tile myTile;
 
     public static bool GenerateWaypoint(MapManagerComponent.Tile tile, int numberOfTries, out Vector2 genWaypoint, LayerMask maskObstacles)
     {
@@ -119,6 +120,15 @@ public class AIPlayerFinder : MonoBehaviour
             mapManager.KillPlayer();
     }
 
+    public void GetPriorityWaypoint()
+    {
+        mapManager.GetObjectTile(out myTile, this.gameObject);
+        Vector2 waypoint2 = GenerateWaypoint(
+            mapManager.FindTileBestPriorityInRange(myTile, 3),
+            maskObstacles, generateWaypointTries);
+        Vector3 waypoint = new Vector3(waypoint2.x, 0, waypoint2.y);
+        this.gameObject.GetComponent<AIPatrolComponent>().AddNavPoint(ref waypoint);
+    }
 
 
     // Start is called before the first frame update
@@ -131,7 +141,9 @@ public class AIPlayerFinder : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {       
+    {
+        if(aiPatrolComponent.GetNavPointsCount()==0)
+            GetPriorityWaypoint();
         ////Debug.Log(Vector3.Distance(this.transform.position, mapManager.GetPlayerPosition()));
         //if (IsPlayerInFOV(hFOV)) //if enemy sees the player
         //{
@@ -165,9 +177,9 @@ public class AIPlayerFinder : MonoBehaviour
         //            }
         //        }
         //    }
-            
+
         //}
         ////Debug.Log(aiPatrolComponent.GetNavPointsCount());
-        
+
     }
 }

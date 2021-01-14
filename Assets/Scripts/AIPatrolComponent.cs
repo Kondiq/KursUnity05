@@ -93,7 +93,7 @@ public class AIPatrolComponent : MonoBehaviour
     {
         navPointsList.Add(point);
         enabled = true;
-        //Debug.Log(point);
+        Debug.Log(point);
     }
 
     public void RemoveNavPoint(int index)

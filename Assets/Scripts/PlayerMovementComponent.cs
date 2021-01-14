@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerMovementComponent : MonoBehaviour
 {
+    public GameObject mapManagerObject;
+    public GameObject grenadePrefab;
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
@@ -40,7 +42,18 @@ public class PlayerMovementComponent : MonoBehaviour
             playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
         }
 
+        if (Input.GetKeyDown(KeyCode.G))
+        {
+            ThrowGrenade();
+        }
+
         playerVelocity.y += gravityValue * Time.deltaTime;
         controller.Move(playerVelocity * Time.deltaTime);
+    }
+
+    private void ThrowGrenade()
+    {
+        GameObject grenade = Instantiate(grenadePrefab, transform.position + 3 * transform.forward, grenadePrefab.transform.rotation);
+        mapManagerObject.GetComponent<MapManagerComponent>().ChangeTilePriority(grenade.transform.position.x, grenade.transform.position.z, mapManagerObject.GetComponent<MapManagerComponent>().pGrenade);
     }
 }

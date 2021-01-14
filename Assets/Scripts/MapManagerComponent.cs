@@ -12,8 +12,8 @@ public class MapManagerComponent : MonoBehaviour
     private float mapHeight;
     private float tileWidth;
     private float tileHeight;
-    public int tilesNumberWide=10;
-    public int tilesNumberHigh=10;
+    public int tilesNumberWide=25;
+    public int tilesNumberHigh=25;
     private Tile[,] tiles;
     //map boundaries
     private Tile floorTile;
@@ -28,14 +28,6 @@ public class MapManagerComponent : MonoBehaviour
     public int pGrenade = -800;
     public int pNapalm = -600;
     public int pCover = 200;
-
-    /*
-     * List<Grenade> listGrenade;
-     * List<Napalm> listNapalm;
-     * 
-     * events instead - lower priority when grenade thrown, increase priority after explosion
-     */
-
 
     public struct Tile
     {

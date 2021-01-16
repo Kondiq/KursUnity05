@@ -14,6 +14,7 @@ public class MapManagerComponent : MonoBehaviour
     private float tileHeight;
     public int tilesNumberWide=25;
     public int tilesNumberHigh=25;
+    public int neighboursRadius = 3;
     private Tile[,] tiles;
     //map boundaries
     private Tile floorTile;
@@ -155,13 +156,13 @@ public class MapManagerComponent : MonoBehaviour
         
     //}
 
-    public float CalculateNeighboursPriority(Tile tile)
+    public float CalculateNeighboursPriority(Tile tile, int radius)
     {
         float totalPriority = 0;
         int tilesAmount = 0;
-        for (int x = -1; x <= 1; x++)
+        for (int x = -radius; x <= radius; x++)
         {
-            for (int y = -1; y <= 1; y++)
+            for (int y = -radius; y <= radius; y++)
             {
                 if (x == 0 && y == 0) //if current node, skip
                     continue;
@@ -173,10 +174,10 @@ public class MapManagerComponent : MonoBehaviour
                 }
             }
         }
-        if (tilesAmount < 8)
-        {
-            totalPriority = totalPriority / tilesAmount * 8;
-        }
+        //if (tilesAmount < 8)
+        //{
+            totalPriority = totalPriority / tilesAmount/* * 8*/;
+        //}
         return totalPriority;
     }
 
@@ -254,9 +255,9 @@ public class MapManagerComponent : MonoBehaviour
                         else if(bestPriorityTile.priority == tiles[x, y].priority) //if equal
                             if (bestPriorityTile.x != tiles[x, y].x && bestPriorityTile.y != tiles[x, y].y) //if it's not the same tile
                             {
-                                if (CalculateNeighboursPriority(bestPriorityTile) < CalculateNeighboursPriority(tiles[x, y])) //if neighbours got better priority
+                                if (CalculateNeighboursPriority(bestPriorityTile, neighboursRadius) < CalculateNeighboursPriority(tiles[x, y], neighboursRadius)) //if neighbours got better priority
                                     bestPriorityTile = tiles[x, y]; //assign
-                                else if (CalculateNeighboursPriority(bestPriorityTile) == CalculateNeighboursPriority(tiles[x, y])) //checking which is closer to originTile
+                                else if (CalculateNeighboursPriority(bestPriorityTile, neighboursRadius) == CalculateNeighboursPriority(tiles[x, y], neighboursRadius)) //checking which is closer to originTile
                                 {
                                     if (Mathf.Abs(bestPriorityTile.x - originTile.x) + Mathf.Abs(bestPriorityTile.y - originTile.y)
                                         < Mathf.Abs(tiles[x, y].x - originTile.x) + Mathf.Abs(tiles[x, y].y - originTile.y))

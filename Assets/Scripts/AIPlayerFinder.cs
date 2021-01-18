@@ -9,9 +9,9 @@ public class AIPlayerFinder : MonoBehaviour
     private MapManagerComponent mapManager;
     MapManagerComponent.Tile playerTile;
     private Vector2 waypoint;
-    public int waypointsTries=5;
-    public int generateWaypointTries = 100;
-    public int radiusInTiles = 4;
+    public int waypointsTries;
+    public int generateWaypointTries;
+    public int radiusInTiles;
     private AIPatrolComponent aiPatrolComponent;
     LayerMask maskObstacles;
     //Vector3 originRayCast;
@@ -123,12 +123,15 @@ public class AIPlayerFinder : MonoBehaviour
 
     public void GetPriorityWaypoint()
     {
-        mapManager.GetObjectTile(out myTile, this.gameObject);
-        Vector2 waypoint2 = GenerateWaypoint(
-            mapManager.FindTileBestPriorityInRange(myTile, radiusInTiles),
-            maskObstacles, generateWaypointTries);
-        Vector3 waypoint = new Vector3(waypoint2.x, 0, waypoint2.y);
-        this.gameObject.GetComponent<AIPatrolComponent>().AddNavPoint(ref waypoint);
+        if(mapManager.GetObjectTile(out myTile, this.gameObject))
+        {
+            //Debug.Log("myTile " + myTile.x + "," + myTile.y);
+            Vector2 waypoint2 = GenerateWaypoint(
+                mapManager.FindTileBestPriorityInRange(myTile, radiusInTiles),
+                maskObstacles, generateWaypointTries);
+            Vector3 waypoint = new Vector3(waypoint2.x, 0, waypoint2.y);
+            this.gameObject.GetComponent<AIPatrolComponent>().AddNavPoint(ref waypoint);
+        }   
     }
 
 

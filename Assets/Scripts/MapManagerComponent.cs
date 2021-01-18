@@ -12,9 +12,9 @@ public class MapManagerComponent : MonoBehaviour
     private float mapHeight;
     private float tileWidth;
     private float tileHeight;
-    public int tilesNumberWide=25;
-    public int tilesNumberHigh=25;
-    public int neighboursRadius = 3;
+    public int tilesNumberWide;
+    public int tilesNumberHigh;
+    public int neighboursRadius;
     private Tile[,] tiles;
     //map boundaries
     private Tile floorTile;
@@ -72,12 +72,40 @@ public class MapManagerComponent : MonoBehaviour
         //tiles array
         tiles = new Tile[tilesNumberWide, tilesNumberHigh];
 
+        Color color;
+
         for (int x = 0; x < tilesNumberWide; x++)
             for (int y = 0; y < tilesNumberHigh; y++)
+            {
                 tiles[x, y] = new Tile(
-                    floorTile.x1+x*tileWidth, floorTile.x1 + x*tileWidth + tileWidth,
+                    floorTile.x1 + x * tileWidth, floorTile.x1 + x * tileWidth + tileWidth,
                     floorTile.z1 + y * tileHeight, floorTile.z1 + y * tileHeight + tileHeight,
-                    x,y);
+                    x, y);
+
+                if (x % 2 == 0)
+                    if (y % 2 == 0)
+                        color = Color.red;
+                    else
+                        color = Color.green;
+                else
+                    if (y % 2 == 0)
+                    color = Color.blue;
+                else
+                    color = Color.yellow;
+
+                Debug.DrawLine(
+                    new Vector3(floorTile.x1 + x * tileWidth, 0.5f, floorTile.z1 + y * tileHeight),
+                    new Vector3(floorTile.x1 + x * tileWidth + tileWidth, 0.5f, floorTile.z1 + y * tileHeight + tileHeight),
+                    color, float.MaxValue);
+                Debug.DrawLine(
+                   new Vector3(floorTile.x1 + x * tileWidth, 0.5f, floorTile.z1 + y * tileHeight + tileHeight),
+                   new Vector3(floorTile.x1 + x * tileWidth + tileWidth, 0.5f, floorTile.z1 + y * tileHeight),
+                   color, float.MaxValue);
+            }
+        
+        
+
+
 
         //SpawnCoins(coinsAmount);
     }
@@ -95,13 +123,14 @@ public class MapManagerComponent : MonoBehaviour
             {
                 //Debug.Log(tiles[x, y].x1 + "-" + tiles[x, y].x2 + " x " + tiles[x, y].z1 + "-" + tiles[x, y].z2 + " object: " + ob.transform.position.x + "x" + ob.transform.position.z);
                 if (
-                    ob.transform.position.x > tiles[x, y].x1
-                    && ob.transform.position.x < tiles[x, y].x2
-                    && ob.transform.position.z > tiles[x, y].z1
-                    && ob.transform.position.z < tiles[x, y].z2
+                    ob.transform.position.x >= tiles[x, y].x1
+                    && ob.transform.position.x <= tiles[x, y].x2
+                    && ob.transform.position.z >= tiles[x, y].z1
+                    && ob.transform.position.z <= tiles[x, y].z2
                     )
                 {
                     tile = tiles[x, y];
+                    Debug.Log("object tile: "+tile.x+","+tile.y);
                     return true;
                 }
             }
@@ -250,6 +279,7 @@ public class MapManagerComponent : MonoBehaviour
                 if (x >= 0 && x < tilesNumberWide && y >= 0 && y < tilesNumberHigh) //if tile in grid
                     if (CalculateDistanceOnGrid(originTile.x, originTile.y, x, y) < radiusInTiles) //if tile in radius
                     {
+                        //Debug.Log("priority " + x + "," + y);
                         if (bestPriorityTile.priority < tiles[x, y].priority) //if better priority
                             bestPriorityTile = tiles[x, y]; //assign
                         else if(bestPriorityTile.priority == tiles[x, y].priority) //if equal
@@ -265,6 +295,7 @@ public class MapManagerComponent : MonoBehaviour
                                 }
                             }
                     }
+        Debug.Log("Best: " + bestPriorityTile.x + "," + bestPriorityTile.y);
         return bestPriorityTile;
     }
 

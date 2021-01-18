@@ -489,7 +489,7 @@ MonoBehaviour:
   mapManagerObject: {fileID: 822612015}
   waypointsTries: 5
   generateWaypointTries: 100
-  radiusInTiles: 2
+  radiusInTiles: 5
 --- !u!195 &860308123
 NavMeshAgent:
   m_ObjectHideFlags: 0

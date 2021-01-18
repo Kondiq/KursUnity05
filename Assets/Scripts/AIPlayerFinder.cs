@@ -146,7 +146,7 @@ public class AIPlayerFinder : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(aiPatrolComponent.GetNavPointsCount()==0)
+        if(aiPatrolComponent.GetNavPointsCount()<=1)
             GetPriorityWaypoint();
         ////Debug.Log(Vector3.Distance(this.transform.position, mapManager.GetPlayerPosition()));
         //if (IsPlayerInFOV(hFOV)) //if enemy sees the player

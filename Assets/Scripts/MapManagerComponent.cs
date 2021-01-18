@@ -302,8 +302,14 @@ public class MapManagerComponent : MonoBehaviour
         public void ChangeTilePriority(float x, float y, int changeFactor)
     {
         Tile tileToChange;
+        
         if(GetCoordinatesTile(out tileToChange, x, y))
+        {
+            Debug.Log("old priority: "+tileToChange.x+","+tileToChange.y+": " + tileToChange.priority);
             tileToChange.priority += changeFactor;
+            Debug.Log("new priority: " + tileToChange.x + "," + tileToChange.y + ": " + tileToChange.priority);
+        }
+            
     }
 
     public void ResetTilesPriority()
